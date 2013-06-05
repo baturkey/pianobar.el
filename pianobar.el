@@ -120,10 +120,13 @@ or nil to let you select.")
 (defvar pianobar-current-artist nil
   "The current pianobar artist, or nil.")
 
+(defvar pianobar-current-lovesong nil
+  "The current pianobar love song status, or nil.")
+
 (defvar pianobar-info-extract-rules
   '(("|> +Station \"\\(.+\\)\" +([0-9]*)$" (1 . pianobar-current-station))
-	("|> +\"\\(.*\\)\" by \"\\(.*\\)\" on \"\\(.*\\)\""
-	 (1 . pianobar-current-song) (2 . pianobar-current-artist) (3 . pianobar-current-album)))
+	("|> +\"\\(.*\\)\" by \"\\(.*\\)\" on \"\\(.*\\)\"\\(.*\\)$"
+	 (1 . pianobar-current-song) (2 . pianobar-current-artist) (3 . pianobar-current-album) (4 . pianobar-current-lovesong)))
   "A list of cells of the form (regex . matchrules), where
 matchrules is a list of cells of the form (group#
 . symbol). After matching the regexp on new input from pianobar,
@@ -165,7 +168,7 @@ Right now, this setting does not really work. At all.")
 (defun pianobar-make-modeline ()
   "Return the new modeline for pianobar-status. Override for custom modeline."
   (if (and pianobar-current-song pianobar-current-artist)
-	  '("" pianobar-current-song " / " pianobar-current-artist)
+	  '("" pianobar-current-song " / " pianobar-current-artist pianobar-current-lovesong)
 	nil))
 
 (defun pianobar-preoutput-filter (str)
@@ -209,7 +212,9 @@ Returns t on success, nil on error."
   "Tell pianobar you love the current song."
   (interactive)
   (if (and pianobar-current-song (pianobar-send-command ?+))
-	  (message (concat "Pianobar: Love'd " pianobar-current-song))))
+	  (message (concat "Pianobar: Love'd " pianobar-current-song)))
+  (setq pianobar-current-lovesong "<3")
+  (pianobar-update-modeline))
 
 (defun pianobar-ban-current-song ()
   "Tell pianobar to ban the current song."
