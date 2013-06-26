@@ -123,6 +123,9 @@ or nil to let you select.")
 (defvar pianobar-current-lovesong nil
   "The current pianobar love song status, or nil.")
 
+(defvar pianobar-current-play-status nil
+  "The current pianobar play status, or nil.")
+
 (defvar pianobar-info-extract-rules
   '(("|> +Station \"\\(.+\\)\" +([0-9]*)$" (1 . pianobar-current-station))
 	("|> +\"\\(.*\\)\" by \"\\(.*\\)\" on \"\\(.*\\)\"\\(.*\\)$"
@@ -168,7 +171,7 @@ Right now, this setting does not really work. At all.")
 (defun pianobar-make-modeline ()
   "Return the new modeline for pianobar-status. Override for custom modeline."
   (if (and pianobar-current-song pianobar-current-artist)
-	  '("" pianobar-current-song " / " pianobar-current-artist pianobar-current-lovesong)
+	  '("" pianobar-current-play-status pianobar-current-song " / " pianobar-current-artist pianobar-current-lovesong)
 	nil))
 
 (defun pianobar-preoutput-filter (str)
@@ -230,7 +233,20 @@ Returns t on success, nil on error."
 (defun pianobar-play-or-pause ()
   "Toggle pianobar's paused state."
   (interactive)
-  (pianobar-send-command ?p))
+  (pianobar-send-command ?p)
+  (if pianobar-current-play-status
+      (setq pianobar-current-play-status nil)
+    (setq pianobar-current-play-status "[||]"))
+  (pianobar-update-modeline)
+)
+
+(defun pianobar-resume-play ()
+  "Resume playback."
+  (interactive)
+  (pianobar-send-command ?P)
+  (setq pianobar-current-play-status nil)
+  (pianobar-update-modeline)
+)
 
 (defun pianobar-change-station ()
   "Bring up pianobar's station select menu."
