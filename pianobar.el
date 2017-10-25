@@ -222,7 +222,7 @@ Returns t on success, nil on error."
   (interactive)
   (if (and pianobar-current-song (pianobar-send-command ?+))
       (message (concat "Pianobar: Loved " pianobar-current-song)))
-  (setq pianobar-current-lovesong "<3")
+  (setq pianobar-current-lovesong " <3")
   (pianobar-update-modeline))
 
 (defun pianobar-ban-current-song ()
