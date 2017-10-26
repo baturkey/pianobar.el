@@ -208,6 +208,8 @@ Returns t on success, nil on error."
       t)
     (if (char-equal ?q char)
         (setq pianobar-running nil))
+    (if (char-equal ?+ char)
+        (setq pianobar-current-lovesong " <3"))
     ))
 
 (defun pianobar-self-insert-command (N)
