@@ -142,7 +142,7 @@ the groups matched will be stored in the associated symbol.")
 (defvar pianobar-mode-map
   (let ((map (nconc (make-keymap) comint-mode-map)))
     (substitute-key-definition 'self-insert-command 'pianobar-self-insert-command map global-map)
-    (define-key (kbd "C-c C-c") #'pianobar-sigint)
+    (define-key map (kbd "C-c C-c") #'pianobar-sigint)
     map))
 
 (defvar pianobar-is-prompting nil
@@ -178,7 +178,7 @@ in favor of pianobar-enable-modeline.")
 
 (defun pianobar-update-modeline ()
   "Update the pianobar modeline with current information."
-  (if (and pianobar-running (or pianobar-global-modeline (equal (buffer-name) pianobar-buffer)))
+  (if (and pianobar-running (or pianobar-enable-modeline (equal (buffer-name) pianobar-buffer)))
       (setq pianobar-status `("  " ,(pianobar-make-modeline) "  "))
     (setq pianobar-status nil))
   (force-mode-line-update))
