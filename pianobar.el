@@ -55,6 +55,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Code:
+;;;; Variables
 
 (require 'comint)
 
@@ -65,6 +66,9 @@
 (defvar pianobar-command
   "pianobar"
   "The command to run pianobar.")
+
+(defvar pianobar-config nil
+  "If not nil, pianobar will load the Pandora username and password from config without prompting.")
 
 (defvar pianobar-username nil
   "The Pandora username to use, or nil to prompt.")
@@ -138,6 +142,7 @@ the groups matched will be stored in the associated symbol.")
 (defvar pianobar-mode-map
   (let ((map (nconc (make-keymap) comint-mode-map)))
     (substitute-key-definition 'self-insert-command 'pianobar-self-insert-command map global-map)
+    (define-key (kbd "C-c C-c") #'pianobar-sigint)
     map))
 
 (defvar pianobar-is-prompting nil
@@ -151,9 +156,16 @@ Set this with (pianobar-set-is-prompting ...).")
 (defvar pianobar-status nil
   "String (or mode-line construct) used in global pianobar mode line.")
 
-(defvar pianobar-global-modeline t
-  "Set to t to make pianobar status modeline global, or nil otherwise.
-Right now, this setting does not really work. At all.")
+(defvar pianobar-enable-modeline t
+  "Set to nil to hide updates in the modeline.")
+
+(defalias 'pianobar-global-modeline 'pianobar-enable-modeline
+  "`pianobar-global-modeline' never worked properly, so it was removed
+in favor of pianobar-enable-modeline.")
+
+(make-obsolete 'pianobar-global-modeline 'pianobar-enable-modeline "2017-11-17")
+
+;;;; Helper Functions
 
 (defvar pianobar-running nil
   "Whether the pianobar process is running.")
@@ -219,13 +231,13 @@ Returns t on success, nil on error."
       (self-insert-command N)
     (pianobar-send-command last-input-event)))
 
+;;;; Interactive Functions
+
 (defun pianobar-love-current-song ()
   "Tell pianobar you love the current song."
   (interactive)
   (if (and pianobar-current-song (pianobar-send-command ?+))
-      (message (concat "Pianobar: Loved " pianobar-current-song)))
-  (setq pianobar-current-lovesong " <3")
-  (pianobar-update-modeline))
+      (message (concat "Pianobar: Love'd " pianobar-current-song))))
 
 (defun pianobar-ban-current-song ()
   "Tell pianobar to ban the current song."
@@ -260,6 +272,12 @@ Returns t on success, nil on error."
   "Bring up pianobar's station select menu."
   (interactive)
   (pianobar-send-command ?s t))
+
+(defun pianobar-sigint ()
+  "Send SIGINT to pianobar process."
+  (interactive)
+  (when (comint-check-proc pianobar-buffer)
+    (interrupt-process pianobar-buffer)))
 
 (define-derived-mode pianobar-mode comint-mode "pianobar"
   "Major mode for interacting with pianobar.

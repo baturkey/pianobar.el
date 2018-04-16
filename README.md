@@ -1,3 +1,6 @@
+Pianobar.el [![MELPA](http://melpa.org/packages/pianobar-badge.svg)](http://melpa.org/#/pianobar)
+===========
+
 This is a thin emacs interface for Pianobar, a Pandora Radio
 <http://pandora.com/> command-line client. Pianobar was written by
 Lars-Dominik Braun, among others, and can be found at
@@ -57,6 +60,9 @@ the number used to select the station you want through Pianobar.
 
 If you leave any of these unset, you will be prompted for the info
 instead.
+
+If your pianobar config contains your username and password, you can
+set `(setq pianobar-config t)`.
 
 If you set `pianobar-run-in-background` to `t`, `M-x pianobar` will
 *not* show the `*pianobar*` buffer after running. This is useful if
