@@ -271,6 +271,12 @@ Returns t on success, nil on error."
   (when (comint-check-proc pianobar-buffer)
     (interrupt-process pianobar-buffer)))
 
+(defun pianobar-quit ()
+  "Quit pianobar and clear mode line."
+  (interactive)
+  (setq pianobar-enable-modeline nil)
+  (pianobar-send-command ?q))
+
 (define-derived-mode pianobar-mode comint-mode "pianobar"
   "Major mode for interacting with pianobar.
 \\{pianobar-mode-map}"
